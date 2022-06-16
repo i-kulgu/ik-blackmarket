@@ -8,8 +8,8 @@ Used the same logic as the qb-shops so the config is self explanatory.
 - Random or fixed locations (when random, location changes after each script restart)
 - Multiple checks for inventory size and slot limits
 
-https://media.discordapp.net/attachments/955865077532209156/986773108990021632/unknown.png
-https://media.discordapp.net/attachments/986773374602711100/986773981619163166/unknown.png
+![image1](https://media.discordapp.net/attachments/955865077532209156/986773108990021632/unknown.png)
+![image2](https://media.discordapp.net/attachments/986773374602711100/986773981619163166/unknown.png)
 
 
 
