@@ -39,7 +39,7 @@ CreateThread(function()
 
 			if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
 			exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },
-			{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = "Browse Shop",
+			{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),
 				shoptable = v, name = v["label"], k = k, l = m, }, },
 			distance = 2.0 })
 		else
@@ -70,7 +70,7 @@ CreateThread(function()
 
 				if Config.Debug then print("Shop - ['"..k.."("..l..")']") end
 				exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },
-				{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = "Browse Shop",
+				{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),
 					shoptable = v, name = v["label"], k = k, l = l, }, },
 				distance = 2.0 })
 			end
@@ -83,15 +83,15 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 	local ShopMenu = {}
 	local hasLicense, hasLicenseItem = nil
 	ShopMenu[#ShopMenu + 1] = { header = data.shoptable["label"], txt = "", isMenuHeader = true }
-	ShopMenu[#ShopMenu + 1] = { header = "", txt = "❌ Close", params = { event = "ik-blackmarket:CloseMenu" } }
+	ShopMenu[#ShopMenu + 1] = { header = "", txt = Lang:t("menu.close"), params = { event = "ik-blackmarket:CloseMenu" } }
 
 	for i = 1, #products do
 		local amount = nil
 		local lock = false
-		if products[i].price == 0 then price = "Free" else price = "Cost: $"..products[i].price end
+		if products[i].price == 0 then price = "Free" else price = Lang:t("menu.cost")..products[i].price end
 
 		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[products[i].name].image.." width=35px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[tostring(products[i].name)].label
-		local text = price.."<br>Weight: "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
+		local text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
 		if products[i].requiredJob then
 			for i2 = 1, #products[i].requiredJob do
 				if QBCore.Functions.GetPlayerData().job.name == products[i].requiredJob[i2] then
@@ -126,20 +126,20 @@ RegisterNetEvent('ik-blackmarket:CloseMenu', function() exports['qb-menu']:close
 
 RegisterNetEvent('ik-blackmarket:Charge', function(data)
 	if data.cost == "Free" then price = data.cost else price = "$"..data.cost end
-	if QBCore.Shared.Items[data.item].weight == 0 then weight = "" else weight = "Weight: "..(QBCore.Shared.Items[data.item].weight / 1000)..Config.Measurement end
-	local settext = "- Confirm Purchase -<br><br>"
-	settext = settext..weight.."<br> Cost per item: "..price.."<br><br>- Payment Type -"
+	if QBCore.Shared.Items[data.item].weight == 0 then weight = "" else weight = Lang:t("menu.weight").." "..(QBCore.Shared.Items[data.item].weight / 1000)..Config.Measurement end
+	local settext = "- "..Lang:t("menu.confirm").." -<br><br>"
+	settext = settext..weight.."<br> "..Lang:t("menu.cpi").." "..price.."<br><br>- "..Lang:t("menu.payment_type").." -"
 	local header = "<center><p><img src=nui://"..Config.img..QBCore.Shared.Items[data.item].image.." width=100px></p>"..QBCore.Shared.Items[data.item].label
 	if data.shoptable["logo"] ~= nil then header = "<center><p><img src="..data.shoptable["logo"].." width=150px></img></p>"..header end
 
 	local newinputs = {}
-	newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = "Cash" }, { value = "bank", text = "Card" } } }
-	newinputs[#newinputs+1] = { type = 'number', isRequired = true, name = 'amount', text = 'Amount to buy' }
+	newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = Lang:t("menu.cash") }, { value = "bank", text = Lang:t("menu.card") } } }
+	newinputs[#newinputs+1] = { type = 'number', isRequired = true, name = 'amount', text = Lang:t("menu.amount") }
 
-	local dialog = exports['qb-input']:ShowInput({ header = header, submitText = "Pay", inputs = newinputs })
+	local dialog = exports['qb-input']:ShowInput({ header = header, submitText = Lang:t("menu.submittext"), inputs = newinputs })
 	if dialog then
 		if not dialog.amount then return end
-		if tonumber(dialog.amount) <= 0 then TriggerEvent("QBCore:Notify", "Incorrect amount", "error") TriggerEvent("ik-blackmarket:Charge", data) return end
+		if tonumber(dialog.amount) <= 0 then TriggerEvent("QBCore:Notify", Lang:t("error.incorrect_amount"), "error") TriggerEvent("ik-blackmarket:Charge", data) return end
 		if data.cost == "Free" then data.cost = 0 end
 		if data.amount == nil then nostash = true end
 		TriggerServerEvent('ik-blackmarket:GetItem', dialog.amount, dialog.billtype, data.item, data.shoptable, data.cost, data.info, data.k, data.l, nostash)
