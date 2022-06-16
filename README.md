@@ -3,6 +3,8 @@
 
 Used the same logic as the qb-shops so the config is self explanatory.
 
+( For any help you can reach us at Discord: [Hi-Dev](https://discord.com/invite/pSJPPctrNx) )
+
 - Easy to setup items
 - Multiple blackmarkets supported
 - Random or fixed locations (when random, location changes after each script restart)
