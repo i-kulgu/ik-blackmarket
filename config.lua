@@ -4,6 +4,11 @@ Config = {
 	MaxSlots = 41, -- Set this to your player inventory slot count, this is default "41"
 	Measurement = "kg", -- Custom Weight measurement
 	RandomLocation = true, -- Set to true if you want random location. False = create for each location a blackmarket
+	OpenWithItem = false, -- Is there an item needed to open the blackmarket ?
+	ItemName = "blackpass", -- If you set the above function to yes, place here your itemname
+	UseBlackMoney = false, -- Do you want to use blackmoney as a payment option
+	BlackMoneyName = "markedbills", -- The name of the black money item
+	BlackMoneyMultiplier = 1.2, -- Where 1 is 100% and 2 is 200% etc, 1.2 if 120%
 }
 
 Config.Products = {

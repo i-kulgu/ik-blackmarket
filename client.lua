@@ -39,8 +39,7 @@ CreateThread(function()
 
 			if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
 			exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },
-			{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),
-				shoptable = v, name = v["label"], k = k, l = m, }, },
+			{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),shoptable = v, name = v["label"], k = k, l = m, }, },
 			distance = 2.0 })
 		else
 			for l, b in pairs(v["coords"]) do -- Create ped for each location given in Config
@@ -69,10 +68,11 @@ CreateThread(function()
 					if Config.Debug then print("Ped Created for Shop - ['"..k.."("..l..")']") end
 
 				if Config.Debug then print("Shop - ['"..k.."("..l..")']") end
-				exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },
-				{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),
-					shoptable = v, name = v["label"], k = k, l = l, }, },
-				distance = 2.0 })
+				if Config.OpenWithItem then
+					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
+				else
+					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), shoptable = v, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
+				end
 			end
 		end
 	end
@@ -88,7 +88,17 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 	for i = 1, #products do
 		local amount = nil
 		local lock = false
-		if products[i].price == 0 then price = "Free" else price = Lang:t("menu.cost")..products[i].price end
+		if products[i].price == 0 then
+			price = "Free"
+		else
+			if Config.UseBlackMoney then
+				totalprice = products[i].price
+				price = Lang:t("menu.cost")..products[i].price
+			else
+				totalprice = (products[i].price * Config.BlackMoneyMultiplier)
+				price = Lang:t("menu.cost")..(products[i].price * Config.BlackMoneyMultiplier)
+			end
+		end
 
 		local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[products[i].name].image.." width=35px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[tostring(products[i].name)].label
 		local text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
@@ -96,19 +106,19 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 			for i2 = 1, #products[i].requiredJob do
 				if QBCore.Functions.GetPlayerData().job.name == products[i].requiredJob[i2] then
 					ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-						params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = products[i].price, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom } } }
+						params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom } } }
 				end
 			end
 		elseif products[i].requiresLicense then
 			if hasLicense and hasLicenseItem then
 			ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-					params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = products[i].price, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom } } }
+					params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom } } }
 			end
 		else
 			ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
 					params = { event = "ik-blackmarket:Charge", args = {
 									item = products[i].name,
-									cost = products[i].price,
+									cost = totalprice,
 									info = products[i].info,
 									shoptable = data.shoptable,
 									k = data.k,
@@ -133,7 +143,11 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
 	if data.shoptable["logo"] ~= nil then header = "<center><p><img src="..data.shoptable["logo"].." width=150px></img></p>"..header end
 
 	local newinputs = {}
-	newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = Lang:t("menu.cash") }, { value = "bank", text = Lang:t("menu.card") } } }
+	if Config.UseBlackMoney then
+		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "blackmoney", text = Lang:t("menu.blackmoney") } } }
+	else
+		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = Lang:t("menu.cash") }, { value = "bank", text = Lang:t("menu.card") } } }
+	end
 	newinputs[#newinputs+1] = { type = 'number', isRequired = true, name = 'amount', text = Lang:t("menu.amount") }
 
 	local dialog = exports['qb-input']:ShowInput({ header = header, submitText = Lang:t("menu.submittext"), inputs = newinputs })

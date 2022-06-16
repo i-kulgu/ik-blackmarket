@@ -23,13 +23,17 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 	local slots = 0
 	for k, v in pairs(Player.PlayerData.items) do slots = slots +1 end
 	slots = Config.MaxSlots - slots
-	local balance = Player.Functions.GetMoney(tostring(billtype))
+	if billtype == "blackmoney" then
+		Balance = Player.Functions.GetItemByName(Config.BlackMoneyName).amount
+	else
+		Balance = Player.Functions.GetMoney(tostring(billtype))
+	end
 	if (totalWeight + (QBCore.Shared.Items[item].weight * amount)) > maxWeight then
 		TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_space"), "error")
 	elseif QBCore.Shared.Items[item].unique and (tonumber(slots) < tonumber(amount)) then
 		TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_slots"), "error")
 	else
-		if balance <= (tonumber(price) * tonumber(amount)) then
+		if Balance <= (tonumber(price) * tonumber(amount)) then
 			TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_money"), "error") return
 		end
 		if QBCore.Shared.Items[item].type == "weapon" or QBCore.Shared.Items[item].unique then
