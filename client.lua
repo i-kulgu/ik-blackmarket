@@ -38,9 +38,11 @@ CreateThread(function()
 			if Config.Debug then print("Ped Created for Shop - ['"..k.."("..m..")']") end
 
 			if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
-			exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },
-			{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),shoptable = v, name = v["label"], k = k, l = m, }, },
-			distance = 2.0 })
+			if Config.OpenWithItem then
+				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
+			else
+				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),shoptable = v, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
+			end
 		else
 			for l, b in pairs(v["coords"]) do -- Create ped for each location given in Config
 				if not v["hideblip"] then -- Create blip if set to false
