@@ -14,4 +14,4 @@ Used the same logic as the qb-shops so the config is self explanatory.
 ![image2](https://media.discordapp.net/attachments/986773374602711100/986773981619163166/unknown.png)
 
 
-
+This is an edited version of [jim-shops](https://github.com/jimathy/jim-shops)
