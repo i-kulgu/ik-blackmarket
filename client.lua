@@ -94,11 +94,11 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 			price = "Free"
 		else
 			if Config.UseBlackMoney then
-				totalprice = products[i].price
-				price = Lang:t("menu.cost")..products[i].price
-			else
 				totalprice = (products[i].price * Config.BlackMoneyMultiplier)
 				price = Lang:t("menu.cost")..(products[i].price * Config.BlackMoneyMultiplier)
+			else
+				totalprice = products[i].price
+				price = Lang:t("menu.cost")..products[i].price
 			end
 		end
 
