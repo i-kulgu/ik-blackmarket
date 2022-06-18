@@ -16,7 +16,7 @@ local Translations = {
 
     target = {
 
-        browse = "Navegar na Loja",
+        browse = "Navegar pela Loja",
 
     },
 
@@ -42,7 +42,7 @@ local Translations = {
 
         submittext = "Pagar",
 
-        blackmoney = "Dinheiro Marcado",
+        blackmoney = "Dinheiro Sujo",
 
      }
 
