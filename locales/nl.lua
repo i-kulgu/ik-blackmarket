@@ -20,6 +20,7 @@ local Translations = {
         card = "Kaart",
         amount = "Te kopen aantal",
         submittext = "Betalen",
+        blackmoney = "Zwart Geld",
      }
 }
 
