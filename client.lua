@@ -11,6 +11,14 @@ end)
 ped = {}
 CreateThread(function()
 	for k, v in pairs(Config.Locations) do
+		if Config.RandomItem then
+			local tp = v.products
+			local pr = math.random(1, #tp)
+			print("pr: "..pr)
+			productstable = { [1] = {name = v.products[pr].name, price = v.products[pr].price, amount = v.products[pr].amount }}
+		else
+			productstable = v.products
+		end
 		if Config.RandomLocation then
 			m = math.random(1, #v["coords"]) -- generate a random coordinate
 			if not v["hideblip"] then -- Create blip if set to false
@@ -39,9 +47,9 @@ CreateThread(function()
 
 			if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
 			if Config.OpenWithItem then
-				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
+				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
 			else
-				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),shoptable = v, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
+				exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
 			end
 		else
 			for l, b in pairs(v["coords"]) do -- Create ped for each location given in Config
@@ -71,9 +79,9 @@ CreateThread(function()
 
 				if Config.Debug then print("Shop - ['"..k.."("..l..")']") end
 				if Config.OpenWithItem then
-					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
+					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v,products = productstable, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
 				else
-					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), shoptable = v, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
+					exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), shoptable = v, products = productstable, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
 				end
 			end
 		end
@@ -81,7 +89,7 @@ CreateThread(function()
 end)
 
 RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
-	local products = data.shoptable.products
+	local products = data.products
 	local ShopMenu = {}
 	local hasLicense, hasLicenseItem = nil
 	ShopMenu[#ShopMenu + 1] = { header = data.shoptable["label"], txt = "", isMenuHeader = true }
