@@ -4,6 +4,7 @@ Config = {
 	MaxSlots = 41, -- Set this to your player inventory slot count, this is default "41"
 	Measurement = "kg", -- Custom Weight measurement
 	RandomLocation = true, -- Set to true if you want random location. False = create for each location a blackmarket
+	RandomItem = true, -- Set to true if you want a random item. False = show all items
 	OpenWithItem = false, -- Is there an item needed to open the blackmarket ?
 	ItemName = "blackpass", -- If you set the above function to yes, place here your itemname
 	RemoveItem = false, -- Do you want to remove the item after purchasing something from black market
