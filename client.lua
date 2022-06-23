@@ -14,7 +14,6 @@ CreateThread(function()
 		if Config.RandomItem then
 			local tp = v.products
 			local pr = math.random(1, #tp)
-			print("pr: "..pr)
 			productstable = { [1] = {name = v.products[pr].name, price = v.products[pr].price, amount = v.products[pr].amount }}
 		else
 			productstable = v.products
