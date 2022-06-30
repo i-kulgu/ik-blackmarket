@@ -14,6 +14,7 @@ Used the same logic as the qb-shops so the config is self explanatory.
 - Ability to use black money (markedbills or other itemname) as payment method
 - When using the blackmoney option, you can add a multiplier to the price if you want to sell items for more when paid by blackmoney.
 - Random item option, if you set this on true your blackmarket will get a random item from your list. If you have disabled random location then all your markets will get different random items.
+- Option to use a timer for changing the location of the black market after X amount of minutes
 
 
 ![image1](https://media.discordapp.net/attachments/955865077532209156/986773108990021632/unknown.png)
