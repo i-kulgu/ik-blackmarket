@@ -6,10 +6,26 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo) PlayerJob = JobI
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty) onDuty = duty end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
 	QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
+	mainthread()
 end)
 
+if Config.UseTimer then
+	Citizen.CreateThread(function()
+		local minutes = Config.ChangeLocationTime
+		while true do
+			Citizen.Wait(60000)
+			minutes = minutes - 1
+			if minutes == 0 then
+				TriggerEvent("ik-blackmarket:client:removeall")
+				mainthread()
+				minutes = Config.ChangeLocationTime
+			end
+		end
+	end)
+end
+
 ped = {}
-CreateThread(function()
+function mainthread()
 	for k, v in pairs(Config.Locations) do
 		if Config.RandomItem then
 			local tp = v.products
@@ -85,7 +101,7 @@ CreateThread(function()
 			end
 		end
 	end
-end)
+end
 
 RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 	local products = data.products
@@ -172,7 +188,7 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
 	end
 end)
 
-AddEventHandler('onResourceStop', function(resource) if resource ~= GetCurrentResourceName() then return end
+RegisterNetEvent("ik-blackmarket:client:removeall",function()
 	for k, v in pairs(Config.Locations) do
 		if Config.RandomLocation then
 			exports['qb-target']:RemoveZone("['"..k.."("..m..")']")
@@ -184,4 +200,8 @@ AddEventHandler('onResourceStop', function(resource) if resource ~= GetCurrentRe
 			end
 		end
 	end
+end)
+
+AddEventHandler('onResourceStop', function(resource) if resource ~= GetCurrentResourceName() then return end
+	TriggerEvent("ik-blackmarket:client:removeall")
 end)

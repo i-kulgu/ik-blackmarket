@@ -11,6 +11,8 @@ Config = {
 	UseBlackMoney = false, -- Do you want to use blackmoney as a payment option
 	BlackMoneyName = "markedbills", -- The name of the black money item
 	BlackMoneyMultiplier = 1.2, -- Where 1 is 100% and 2 is 200% etc, 1.2 if 120%
+	UseTimer = false, -- Use a timer to change the blackmarket location
+	ChangeLocationTime = 30, -- Time in minutes to change the location of the black market.
 }
 
 Config.Products = {
