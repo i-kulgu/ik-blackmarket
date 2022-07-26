@@ -21,6 +21,7 @@ local Translations = {
         amount = "Quantidade para Comprar",
         submittext = "Pagar",
         blackmoney = "Dinheiro Sujo",
+        crypto = "Q-Bit",
      }
 }
 Lang = Locale:new({

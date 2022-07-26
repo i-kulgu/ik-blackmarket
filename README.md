@@ -11,7 +11,7 @@ Used the same logic as the qb-shops so the config is self explanatory.
 - Multiple checks for inventory size and slot limits
 - Localisation : Translated to languages ; English, Dutch and Turkish
 - Ability to open the shop with a configured item
-- Ability to use black money (markedbills or other itemname) as payment method
+- Ability to use black money (markedbills or other itemname) or Q-Bit as payment method
 - When using the blackmoney option, you can add a multiplier to the price if you want to sell items for more when paid by blackmoney.
 - Random item option, if you set this on true your blackmarket will get a random item from your list. If you have disabled random location then all your markets will get different random items.
 - Option to use a timer for changing the location of the black market after X amount of minutes

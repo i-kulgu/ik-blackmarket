@@ -21,6 +21,7 @@ local Translations = {
         amount = "Te kopen aantal",
         submittext = "Betalen",
         blackmoney = "Zwart Geld",
+        crypto = "Q-Bit",
      }
 }
 

@@ -21,6 +21,7 @@ local Translations = {
         amount = "العدد",
         submittext = "دفع",
         blackmoney = "اموال قدرة",
+        crypto = "Q-Bit",
      }
 }
 

@@ -21,6 +21,7 @@ local Translations = {
         amount = "Alınacak miktar",
         submittext = "Öde",
         blackmoney = "Kara Para",
+        crypto = "Q-Bit",
      }
 }
 

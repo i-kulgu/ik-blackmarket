@@ -116,7 +116,7 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 		if products[i].price == 0 then
 			price = "Free"
 		else
-			if Config.UseBlackMoney then
+			if Config.Payment == "blackmoney" then
 				totalprice = (products[i].price * Config.BlackMoneyMultiplier)
 				price = Lang:t("menu.cost")..(products[i].price * Config.BlackMoneyMultiplier)
 			else
@@ -168,8 +168,10 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
 	if data.shoptable["logo"] ~= nil then header = "<center><p><img src="..data.shoptable["logo"].." width=150px></img></p>"..header end
 
 	local newinputs = {}
-	if Config.UseBlackMoney then
+	if Config.Payment == "blackmoney" then
 		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "blackmoney", text = Lang:t("menu.blackmoney") } } }
+	elseif Config.Payment == "crypto" then
+		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "crypto", text = Lang:t("menu.crypto") } } }
 	else
 		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = Lang:t("menu.cash") }, { value = "bank", text = Lang:t("menu.card") } } }
 	end

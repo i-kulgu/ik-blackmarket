@@ -15,7 +15,7 @@ AddEventHandler('onResourceStart', function(resource)
 	end
 end)
 
-RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price, info, shop, num, nostash)
+RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 	local totalWeight = QBCore.Player.GetTotalWeight(Player.PlayerData.items)
@@ -45,7 +45,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 			for i = 1, amount do
 				if Player.Functions.AddItem(item, 1) then
 					if tonumber(i) == tonumber(amount) then
-						if Config.UseBlackMoney and BlackMoneyName == "markedbills" then
+						if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" then
 							payByMarkedBills(Balance,price)
 						else
 							Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
@@ -59,7 +59,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 			end
 		else
 			if Player.Functions.AddItem(item, amount) then
-				if Config.UseBlackMoney and BlackMoneyName == "markedbills" then
+				if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" then
 					payByMarkedBills(Balance,price)
 				else
 					Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
@@ -81,9 +81,9 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 	end
 end)
 
-function getMarkedBillWorth() 
+function getMarkedBillWorth()
 	local Player = QBCore.Functions.GetPlayer(source)
-	local markedbilltotal = 0 
+	local markedbilltotal = 0
 	for k, v in pairs(Player.PlayerData.items) do
 		if v.name == "markedbills" then
 			markedbilltotal = markedbilltotal + v.info.worth
