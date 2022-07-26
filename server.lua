@@ -30,6 +30,8 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 		else
 			Balance = Player.Functions.GetItemByName(BlackMoneyName).amount
 		end
+	elseif billtype == "crypto" then
+		Balance = Player.PlayerData.money.crypto
 	else
 		Balance = Player.Functions.GetMoney(tostring(billtype))
 	end
