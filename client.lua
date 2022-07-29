@@ -168,10 +168,8 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
 	if data.shoptable["logo"] ~= nil then header = "<center><p><img src="..data.shoptable["logo"].." width=150px></img></p>"..header end
 
 	local newinputs = {}
-	if Config.Payment == "blackmoney" then
-		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "blackmoney", text = Lang:t("menu.blackmoney") } } }
-	elseif Config.Payment == "crypto" then
-		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "crypto", text = Lang:t("menu.crypto") } } }
+	if Config.UseDirtyMoney then
+		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "blackmoney", text = Lang:t("menu.blackmoney") },{ value = "crypto", text = Lang:t("menu.crypto") } } }
 	else
 		newinputs[#newinputs+1] = { type = 'radio', name = 'billtype', text = settext, options = { { value = "cash", text = Lang:t("menu.cash") }, { value = "bank", text = Lang:t("menu.card") } } }
 	end
