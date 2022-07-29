@@ -160,7 +160,7 @@ end)
 RegisterNetEvent('ik-blackmarket:CloseMenu', function() exports['qb-menu']:closeMenu() end)
 
 RegisterNetEvent('ik-blackmarket:Charge', function(data)
-	if data.cost == "Free" then price = data.cost else if Config.Payment == "crypto" then price = "₿"..data.cost else price = "$"..data.cost end
+	if data.cost == "Free" then price = data.cost else if Config.Payment == "crypto" then price = "₿"..data.cost else price = "$"..data.cost end end
 	if QBCore.Shared.Items[data.item].weight == 0 then weight = "" else weight = Lang:t("menu.weight").." "..(QBCore.Shared.Items[data.item].weight / 1000)..Config.Measurement end
 	local settext = "- "..Lang:t("menu.confirm").." -<br><br>"
 	settext = settext..weight.."<br> "..Lang:t("menu.cpi").." "..price.."<br><br>- "..Lang:t("menu.payment_type").." -"
