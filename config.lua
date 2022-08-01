@@ -8,8 +8,8 @@ Config = {
 	OpenWithItem = false, -- Is there an item needed to open the blackmarket ?
 	ItemName = "blackpass", -- If you set the above function to yes, place here your itemname
 	RemoveItem = false, -- Do you want to remove the item after purchasing something from black market
-	UseDirtyMoney = true, -- Do you want to use dirty money like blackmoney / crypto
-	Payment = "blackmoney", -- Choose between blackmoney / crypto (default q-bit crypto)
+	UseDirtyMoney = false, -- Do you want to use dirty money like blackmoney / crypto
+	Payment = "crypto", -- Choose between blackmoney / crypto (default q-bit crypto)
 	BlackMoneyName = "markedbills", -- If the option above is blackmoney then set the name of the black money item
 	BlackMoneyMultiplier = 1.2, -- Where 1 is 100% and 2 is 200% etc, 1.2 if 120%
 	UseTimer = false, -- Use a timer to change the blackmarket location
@@ -18,9 +18,9 @@ Config = {
 
 Config.Products = {
 	["blackmarket"] = {
-        [1] = { name = "weapon_pistol", price = 1850, amount = 1 },
-		[2] = { name = "pistol_suppressor", price = 850, amount = 1 },
-		[3] = { name = "pistol_ammo", price = 550, amount = 5 },
+        [1] = { name = "weapon_pistol", price = 1850, crypto = 3, amount = 1 },
+		[2] = { name = "pistol_suppressor", price = 850, crypto = 2, amount = 1 },
+		[3] = { name = "pistol_ammo", price = 550, crypto = 1,amount = 5 },
 	},
 }
 

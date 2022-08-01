@@ -40,7 +40,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 	elseif QBCore.Shared.Items[item].unique and (tonumber(slots) < tonumber(amount)) then
 		TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_slots"), "error")
 	else
-		if Balance <= (tonumber(price) * tonumber(amount)) then
+		if Balance < (tonumber(price) * tonumber(amount)) then
 			TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_money"), "error") return
 		end
 		if QBCore.Shared.Items[item].type == "weapon" or QBCore.Shared.Items[item].unique then

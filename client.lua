@@ -23,14 +23,18 @@ if Config.UseTimer then
 		end
 	end)
 end
+Citizen.CreateThread(function()
+	mainthread()
+end)
 
 ped = {}
+productstable = {}
 function mainthread()
 	for k, v in pairs(Config.Locations) do
 		if Config.RandomItem then
 			local tp = v.products
 			local pr = math.random(1, #tp)
-			productstable = { [1] = {name = v.products[pr].name, price = v.products[pr].price, amount = v.products[pr].amount }}
+			productstable = { [1] = {name = v.products[pr].name, price = v.products[pr].price, crypto = v.products[pr].crypto, amount = v.products[pr].amount }}
 		else
 			productstable = v.products
 		end
@@ -109,7 +113,7 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 	local hasLicense, hasLicenseItem = nil
 	ShopMenu[#ShopMenu + 1] = { header = data.shoptable["label"], txt = "", isMenuHeader = true }
 	ShopMenu[#ShopMenu + 1] = { header = "", txt = Lang:t("menu.close"), params = { event = "ik-blackmarket:CloseMenu" } }
-
+	
 	for i = 1, #products do
 		local amount = nil
 		local lock = false
@@ -118,10 +122,13 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 		else
 			if Config.Payment == "blackmoney" then
 				totalprice = (products[i].price * Config.BlackMoneyMultiplier)
-				price = Lang:t("menu.cost")..(products[i].price * Config.BlackMoneyMultiplier)
+				price = Lang:t("menu.cost")..totalprice
+			elseif Config.Payment == "crypto" then
+				totalprice = products[i].crypto
+				price = Lang:t("menu.cost")..totalprice
 			else
 				totalprice = products[i].price
-				price = Lang:t("menu.cost")..products[i].price
+				price = Lang:t("menu.cost")..totalprice
 			end
 		end
 
@@ -160,6 +167,7 @@ end)
 RegisterNetEvent('ik-blackmarket:CloseMenu', function() exports['qb-menu']:closeMenu() end)
 
 RegisterNetEvent('ik-blackmarket:Charge', function(data)
+	print("Cost: "..data.cost)
 	if data.cost == "Free" then price = data.cost else if Config.Payment == "crypto" then price = "₿"..data.cost else price = "$"..data.cost end end
 	if QBCore.Shared.Items[data.item].weight == 0 then weight = "" else weight = Lang:t("menu.weight").." "..(QBCore.Shared.Items[data.item].weight / 1000)..Config.Measurement end
 	local settext = "- "..Lang:t("menu.confirm").." -<br><br>"
