@@ -15,7 +15,7 @@ AddEventHandler('onResourceStart', function(resource)
 	end
 end)
 
-RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price)
+RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price, removeitem)
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
 	local totalWeight = QBCore.Player.GetTotalWeight(Player.PlayerData.items)
@@ -76,8 +76,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
 	data.shoptable = shoptable
 	custom = true
 	if Config.RemoveItem then
-		local itemused = Config.ItemName
-		Player.Functions.RemoveItem(itemused, 1)
+		Player.Functions.RemoveItem(removeitem, 1)
 	else
 		TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
 	end
