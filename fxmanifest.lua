@@ -1,6 +1,6 @@
 name "ik-blackmarket"
 author "Proportions#8460"
-version "1.0.5"
+version "1.1.0"
 description "Blackmarket script by Proportions#8460"
 fx_version "cerulean"
 game "gta5"

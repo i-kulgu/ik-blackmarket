@@ -1,7 +1,7 @@
 Config = {
 	Debug = false, -- Enable to add debug boxes and message.
-    Inventory = "lj-inventory", -- Set your inventory name here
-	img = "lj-inventory/html/images/", -- Set this to your inventory
+    Inventory = "qb-inventory", -- Set your inventory name here
+	img = "qb-inventory/html/images/", -- Set this to your inventory
 	MaxSlots = 41, -- Set this to your player inventory slot count, this is default "41"
 	Measurement = "kg", -- Custom Weight measurement
 	RandomLocation = true, -- Set to true if you want random location. False = create for each location a blackmarket
@@ -9,8 +9,8 @@ Config = {
 	OpenWithItem = false, -- Is there an item needed to open the blackmarket ?
 	ItemName = "blackpass", -- If you set the above function to yes, place here your itemname
 	RemoveItem = false, -- Do you want to remove the item after purchasing something from black market
-	UseDirtyMoney = false, -- Do you want to use dirty money like blackmoney / crypto
-	Payment = "crypto", -- Choose between blackmoney / crypto (default q-bit crypto)
+	UseDirtyMoney = true, -- Do you want to use dirty money like blackmoney / crypto. Set to false if you want pay with normal money
+	Payment = "blackmoney", -- Choose between blackmoney / crypto (default q-bit crypto)
 	BlackMoneyName = "markedbills", -- If the option above is blackmoney then set the name of the black money item
 	BlackMoneyMultiplier = 1.2, -- Where 1 is 100% and 2 is 200% etc, 1.2 if 120%
 	UseTimer = false, -- Use a timer to change the blackmarket location

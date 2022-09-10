@@ -28,7 +28,7 @@ Citizen.CreateThread(function()
 end)
 
 ped = {}
-productstable = {}
+local productstable = {}
 function mainthread()
     for k, v in pairs(Config.Locations) do
         if Config.RandomItem then
@@ -65,11 +65,7 @@ function mainthread()
             if Config.Debug then print("Ped Created for Shop - ['"..k.."("..m..")']") end
 
             if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
-            -- if Config.OpenWithItem then
-            -- 	exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
-            -- else
-                exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),item = (v.openwith or nil),gang = (v.gang or nil), shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
-            -- end
+            exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),item = (v.openwith or nil),gang = (v.gang or nil), shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
         else
             for l, b in pairs(v["coords"]) do -- Create ped for each location given in Config
                 if not v["hideblip"] then -- Create blip if set to false
@@ -84,24 +80,20 @@ function mainthread()
                     EndTextCommandSetBlipName(StoreBlip)
                 end
                 -- Create ped for each location in coords
-                    local i = math.random(1, #v["model"])
-                    RequestModel(v["model"][i]) while not HasModelLoaded(v["model"][i]) do Wait(0) end
-                    if ped["Shop - ['"..k.."("..l..")']"] == nil then ped["Shop - ['"..k.."("..l..")']"] = CreatePed(0, v["model"][i], b.x, b.y, b.z-1.0, b.a, false, false) end
-                    if not v["killable"] then SetEntityInvincible(ped["Shop - ['"..k.."("..l..")']"], true) end
-                    local scenarios = { "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "WORLD_HUMAN_GUARD_PATROL", "WORLD_HUMAN_JANITOR", "WORLD_HUMAN_MUSCLE_FLEX", "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "PROP_HUMAN_STAND_IMPATIENT", }
-                    scenario = math.random(1, #scenarios)
-                    TaskStartScenarioInPlace(ped["Shop - ['"..k.."("..l..")']"], scenarios[scenario], -1, true)
-                    SetBlockingOfNonTemporaryEvents(ped["Shop - ['"..k.."("..l..")']"], true)
-                    FreezeEntityPosition(ped["Shop - ['"..k.."("..l..")']"], true)
-                    SetEntityNoCollisionEntity(ped["Shop - ['"..k.."("..l..")']"], PlayerPedId(), false)
-                    if Config.Debug then print("Ped Created for Shop - ['"..k.."("..l..")']") end
+                local i = math.random(1, #v["model"])
+                RequestModel(v["model"][i]) while not HasModelLoaded(v["model"][i]) do Wait(0) end
+                if ped["Shop - ['"..k.."("..l..")']"] == nil then ped["Shop - ['"..k.."("..l..")']"] = CreatePed(0, v["model"][i], b.x, b.y, b.z-1.0, b.a, false, false) end
+                if not v["killable"] then SetEntityInvincible(ped["Shop - ['"..k.."("..l..")']"], true) end
+                local scenarios = { "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "WORLD_HUMAN_GUARD_PATROL", "WORLD_HUMAN_JANITOR", "WORLD_HUMAN_MUSCLE_FLEX", "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "PROP_HUMAN_STAND_IMPATIENT", }
+                scenario = math.random(1, #scenarios)
+                TaskStartScenarioInPlace(ped["Shop - ['"..k.."("..l..")']"], scenarios[scenario], -1, true)
+                SetBlockingOfNonTemporaryEvents(ped["Shop - ['"..k.."("..l..")']"], true)
+                FreezeEntityPosition(ped["Shop - ['"..k.."("..l..")']"], true)
+                SetEntityNoCollisionEntity(ped["Shop - ['"..k.."("..l..")']"], PlayerPedId(), false)
+                if Config.Debug then print("Ped Created for Shop - ['"..k.."("..l..")']") end
 
                 if Config.Debug then print("Shop - ['"..k.."("..l..")']") end
-                -- if Config.OpenWithItem then
-                -- 	exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = Config.ItemName, shoptable = v,products = productstable, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
-                -- else
-                    exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = (v.openwith or nil),gang = (v.gang or nil), shoptable = v, products = productstable, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
-                -- end
+                exports['qb-target']:AddCircleZone("Shop - ['"..k.."("..l..")']", vector3(b.x, b.y, b.z), 2.0, { name="Shop - ['"..k.."("..l..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"), item = (v.openwith or nil),gang = (v.gang or nil), shoptable = v, products = productstable, name = v["label"], k = k, l = l, }, }, distance = 2.0 })
             end
         end
     end
@@ -133,7 +125,7 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
             end
         end
 
-        local setheader = "<img src=nui://"..Config.img..QBCore.Shared.Items[products[i].name].image.." width=35px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[tostring(products[i].name)].label
+        local setheader = QBCore.Shared.Items[tostring(products[i].name)].label --"<img src=nui://"..Config.img..QBCore.Shared.Items[products[i].name].image.." width=35px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[tostring(products[i].name)].label
         local text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
         if products[i].requiredJob then
             for i2 = 1, #products[i].requiredJob do
@@ -153,7 +145,7 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
                                     item = products[i].name,
                                     cost = totalprice,
                                     info = products[i].info,
-                                    shoptable = data.shoptable,
+                                    shoptable = products,
                                     k = data.k,
                                     l = data.l,
                                     amount = amount,
