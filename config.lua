@@ -1,6 +1,5 @@
 Config = {
 	Debug = false, -- Enable to add debug boxes and message.
-    Inventory = "qb-inventory", -- Set your inventory name here
 	img = "qb-inventory/html/images/", -- Set this to your inventory
 	MaxSlots = 41, -- Set this to your player inventory slot count, this is default "41"
 	Measurement = "kg", -- Custom Weight measurement
