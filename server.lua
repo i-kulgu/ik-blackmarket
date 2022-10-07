@@ -26,14 +26,12 @@ local function getMarkedBillWorth(source)
             markedbilltotal = markedbilltotal + (v.info.worth * v.amount)
         end
     end
-    print("Markedbilltotal: "..markedbilltotal)
     return markedbilltotal
 end
 
 local function payByMarkedBills(balance, price,source)
     local Player = QBCore.Functions.GetPlayer(source)
     Balance = balance - price
-    print("Balance : "..Balance)
     info = {
         worth = Balance
     }
