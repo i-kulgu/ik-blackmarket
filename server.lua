@@ -29,15 +29,14 @@ local function getMarkedBillWorth(source)
     return markedbilltotal
 end
 
-local function payByMarkedBills(balance, price,source)
+local function payByMarkedBills(balance,source)
     local Player = QBCore.Functions.GetPlayer(source)
-    Balance = balance - price
     info = {
-        worth = Balance
+        worth = balance
     }
-    for k, v in pairs(Player.PlayerData.items) do
+    for _, v in pairs(Player.PlayerData.items) do
         if v.name == "markedbills" then
-            Player.Functions.RemoveItem("markedbills", v.amount, false)
+            Player.Functions.RemoveItem("markedbills", v.amount)
         end
     end
     Player.Functions.AddItem("markedbills", 1 , false ,info)
@@ -47,14 +46,13 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local BlackMoneyName = Config.BlackMoneyName
-    local TotalPrice = tonumber(price) * tonumber(amount)
-    Balance = balance
+    local newbalance = balance - price
     if weapon then
         for i = 1, tonumber(amount) do
             if Player.Functions.AddItem(item, 1) then
                 if tonumber(i) == tonumber(amount) then
-                    if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney == "true" then
-                        payByMarkedBills(Balance,price,src)
+                    if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
+                        payByMarkedBills(newbalance,src)
                     else
                         Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
                     end
@@ -67,8 +65,8 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
         end
     else
         if Player.Functions.AddItem(item, amount) then
-            if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney == "true" then
-                payByMarkedBills(Balance,TotalPrice, src)
+            if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
+                payByMarkedBills(newbalance, src)
             else
                 Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
             end
@@ -85,6 +83,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local BlackMoneyName = Config.BlackMoneyName
+    local TotalPrice = tonumber(price) * tonumber(amount)
     if billtype == "blackmoney" then
         if BlackMoneyName == "markedbills" then
             Balance = getMarkedBillWorth(src)
@@ -96,13 +95,13 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
     else
         Balance = Player.Functions.GetMoney(tostring(billtype))
     end
-    if Balance < (tonumber(price) * tonumber(amount)) then
+    if Balance < TotalPrice then
         TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_money"), "error") return
     end
     if QBCore.Shared.Items[item].type == "weapon" or QBCore.Shared.Items[item].unique then
-        GiveAndCheckItem(item,amount,true,price,Balance,billtype)
+        GiveAndCheckItem(item,amount,true,TotalPrice,Balance,billtype)
     else
-        GiveAndCheckItem(item,amount,false,price,Balance,billtype)
+        GiveAndCheckItem(item,amount,false,TotalPrice,Balance,billtype)
     end
     local data = {}
     if Config.RandomItem then
