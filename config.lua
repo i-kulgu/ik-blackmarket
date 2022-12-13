@@ -5,6 +5,7 @@ Config = {
 	Measurement = "kg", -- Custom Weight measurement
 	RandomLocation = true, -- Set to true if you want random location. False = create for each location a blackmarket
 	RandomItem = true, -- Set to true if you want a random item. False = show all items
+	RandomItemAmount = 3, -- Amount of random items
 	OpenWithItem = false, -- Is there an item needed to open the blackmarket ?
 	ItemName = "blackpass", -- If you set the above function to yes, place here your itemname
 	RemoveItem = false, -- Do you want to remove the item after purchasing something from black market
