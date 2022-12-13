@@ -32,9 +32,13 @@ local productstable = {}
 function mainthread()
     for k, v in pairs(Config.Locations) do
         if Config.RandomItem then
-            local tp = v.products
-            local pr = math.random(1, #tp)
-            productstable = { [1] = {name = v.products[pr].name, price = v.products[pr].price, crypto = v.products[pr].crypto, amount = v.products[pr].amount }}
+            local ia = 0 
+            repeat
+                ia += 1
+                local tp = v.products
+                local pr = math.random(1, #tp)
+                productstable[#productstable+1] = {name = v.products[pr].name, price = v.products[pr].price, crypto = v.products[pr].crypto, amount = v.products[pr].amount }
+            until ia == Config.RandomItemAmount
         else
             productstable = v.products
         end
