@@ -53,6 +53,8 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
                 if tonumber(i) == tonumber(amount) then
                     if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
                         payByMarkedBills(newbalance,src)
+                    elseif Config.Payment == "blackmoney" and BlackMoneyName ~= "markedbills" and Config.UseDirtyMoney then
+                        Player.Functions.RemoveItem(BlackMoneyName, (tonumber(price) * tonumber(amount)))
                     else
                         Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
                     end
@@ -67,6 +69,8 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
         if Player.Functions.AddItem(item, amount) then
             if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
                 payByMarkedBills(newbalance, src)
+            elseif Config.Payment == "blackmoney" and BlackMoneyName ~= "markedbills" and Config.UseDirtyMoney then
+                Player.Functions.RemoveItem(BlackMoneyName, (tonumber(price) * tonumber(amount)))
             else
                 Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
             end
