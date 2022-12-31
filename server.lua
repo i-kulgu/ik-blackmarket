@@ -16,6 +16,15 @@ AddEventHandler('onResourceStart', function(resource)
     end
 end)
 
+local function GetTotalWeight(items)
+	local weight = 0
+    if not items then return 0 end
+    for _, item in pairs(items) do
+        weight += item.weight * item.amount
+    end
+    return tonumber(weight)
+end
+
 -- ##### Functions ##### --
 
 local function getMarkedBillWorth(source)
@@ -88,6 +97,12 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
     local Player = QBCore.Functions.GetPlayer(src)
     local BlackMoneyName = Config.BlackMoneyName
     local TotalPrice = tonumber(price) * tonumber(amount)
+    local totalweight = GetTotalWeight(Player.PlayerData.items)
+    local slots = 0
+	for _ in pairs(Player.PlayerData.items) do slots = slots +1 end
+	slots = Config.MaxSlots - slots
+    if (totalweight + (QBCore.Shared.Items[item].weight * amount)) > Config.MaxWeight then TriggerClientEvent("QBCore:Notify", src, "Not enough space in inventory", "error") return end
+    if QBCore.Shared.Items[item].unique and (tonumber(slots) < tonumber(amount)) then TriggerClientEvent("QBCore:Notify", src, "Not enough slots in inventory", "error") return end
     if billtype == "blackmoney" then
         if BlackMoneyName == "markedbills" then
             Balance = getMarkedBillWorth(src)
