@@ -16,15 +16,6 @@ AddEventHandler('onResourceStart', function(resource)
     end
 end)
 
-local function GetTotalWeight(items)
-	local weight = 0
-    if not items then return 0 end
-    for _, item in pairs(items) do
-        weight += item.weight * item.amount
-    end
-    return tonumber(weight)
-end
-
 -- ##### Functions ##### --
 
 local function getMarkedBillWorth(source)
@@ -88,6 +79,15 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
             TriggerClientEvent('QBCore:Notify', src,  Lang:t("error.cant_give"), "error")
         end
     end
+end
+
+local function GetTotalWeight(items)
+	local weight = 0
+    if not items then return 0 end
+    for _, item in pairs(items) do
+        weight += item.weight * item.amount
+    end
+    return tonumber(weight)
 end
 
 -- ##### Events ##### --
