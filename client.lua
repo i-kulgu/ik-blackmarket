@@ -6,14 +6,13 @@ RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo) PlayerJob = JobI
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty) onDuty = duty end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
     QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
-    mainthread()
 end)
 
 if Config.UseTimer then
-    Citizen.CreateThread(function()
+    CreateThread(function()
         local minutes = Config.ChangeLocationTime
         while true do
-            Citizen.Wait(60000)
+            Wait(60000)
             minutes = minutes - 1
             if minutes == 0 then
                 TriggerEvent("ik-blackmarket:client:removeall")
@@ -23,22 +22,41 @@ if Config.UseTimer then
         end
     end)
 end
-Citizen.CreateThread(function()
+
+CreateThread(function()
     mainthread()
 end)
+
+local function shuffle (arr)
+    for i = 1, #arr - 1 do
+      local j = math.random(i, #arr)
+      arr[i], arr[j] = arr[j], arr[i]
+    end
+end
+
+local function shuffled_range_take (n, a, b)
+    local numbers = {}
+    for i = a, b do
+      numbers[i] = i
+    end
+    shuffle(numbers)
+    return { table.unpack(numbers, 1, n) }
+end
 
 ped = {}
 local productstable = {}
 function mainthread()
     for k, v in pairs(Config.Locations) do
         if Config.RandomItem then
-            local ia = 0 
-            repeat
-                ia += 1
-                local tp = v.products
-                local pr = math.random(1, #tp)
-                productstable[#productstable+1] = {name = v.products[pr].name, price = v.products[pr].price, crypto = v.products[pr].crypto, amount = v.products[pr].amount }
-            until ia == Config.RandomItemAmount
+            local tp = v.products
+            local rt = shuffled_range_take(Config.RandomItemAmount, 1, #tp)
+            for i = 1, Config.RandomItemAmount do
+                -- local pr = math.random(1, #tp)
+                local X = rt[i]
+                productstable[#productstable+1] = {name = v.products[X].name, price = v.products[X].price, crypto = v.products[X].crypto, amount = v.products[X].amount }
+                i = i + 1
+            end
+            rt= {}
         else
             productstable = v.products
         end
