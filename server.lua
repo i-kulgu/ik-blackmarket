@@ -54,9 +54,9 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
                     if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
                         payByMarkedBills(newbalance,src)
                     elseif Config.Payment == "blackmoney" and BlackMoneyName ~= "markedbills" and Config.UseDirtyMoney then
-                        Player.Functions.RemoveItem(BlackMoneyName, (tonumber(price) * tonumber(amount)))
+                        Player.Functions.RemoveItem(BlackMoneyName, tonumber(price))
                     else
-                        Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
+                        Player.Functions.RemoveMoney(tostring(billtype), tonumber(price), 'shop-payment')
                     end
                     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount)
                 end
@@ -70,9 +70,9 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
             if Config.Payment == "blackmoney" and BlackMoneyName == "markedbills" and Config.UseDirtyMoney then
                 payByMarkedBills(newbalance, src)
             elseif Config.Payment == "blackmoney" and BlackMoneyName ~= "markedbills" and Config.UseDirtyMoney then
-                Player.Functions.RemoveItem(BlackMoneyName, (tonumber(price) * tonumber(amount)))
+                Player.Functions.RemoveItem(BlackMoneyName, tonumber(price))
             else
-                Player.Functions.RemoveMoney(tostring(billtype), (tonumber(price) * tonumber(amount)), 'shop-payment')
+                Player.Functions.RemoveMoney(tostring(billtype), tonumber(price)), 'shop-payment')
             end
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount)
         else
