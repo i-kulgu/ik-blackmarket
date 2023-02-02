@@ -72,7 +72,7 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
             elseif Config.Payment == "blackmoney" and BlackMoneyName ~= "markedbills" and Config.UseDirtyMoney then
                 Player.Functions.RemoveItem(BlackMoneyName, tonumber(price))
             else
-                Player.Functions.RemoveMoney(tostring(billtype), tonumber(price)), 'shop-payment')
+                Player.Functions.RemoveMoney(tostring(billtype), tonumber(price), 'shop-payment')
             end
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount)
         else
