@@ -28,7 +28,6 @@ end
 
 RegisterNetEvent('ik-blackmarket:client:CreatePed', function ()
     QBCore.Functions.TriggerCallback('ik-blackmarket:server:PedLocation', function(data)
-        QBCore.Debug(data)
         local bm = data.bm
         loc = data.loc
         local sdata = data.data
