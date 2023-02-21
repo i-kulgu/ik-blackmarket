@@ -1,30 +1,13 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-m = 0
+local loc = 0
 PlayerJob = {}
+local ped = {}
+local productstable = {}
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function() QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end) end)
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo) PlayerJob = JobInfo end)
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty) onDuty = duty end)
 AddEventHandler('onResourceStart', function(resource) if GetCurrentResourceName() ~= resource then return end
     QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end)
-end)
-
-if Config.UseTimer then
-    CreateThread(function()
-        local minutes = Config.ChangeLocationTime
-        while true do
-            Wait(60000)
-            minutes = minutes - 1
-            if minutes == 0 then
-                TriggerEvent("ik-blackmarket:client:removeall")
-                mainthread()
-                minutes = Config.ChangeLocationTime
-            end
-        end
-    end)
-end
-
-CreateThread(function()
-    mainthread()
 end)
 
 local function shuffle (arr)
@@ -43,9 +26,42 @@ local function shuffled_range_take (n, a, b)
     return { table.unpack(numbers, 1, n) }
 end
 
-ped = {}
-local productstable = {}
-function mainthread()
+RegisterNetEvent('ik-blackmarket:client:CreatePed', function ()
+    QBCore.Functions.TriggerCallback('ik-blackmarket:server:PedLocation', function(data)
+        QBCore.Debug(data)
+        local bm = data.bm
+        loc = data.loc
+        local sdata = data.data
+        if not sdata["hideblip"] then -- Create blip if set to false
+            StoreBlip = AddBlipForCoord(b)
+            SetBlipSprite(StoreBlip, sdata["blipsprite"])
+            SetBlipScale(StoreBlip, 0.7)
+            SetBlipDisplay(StoreBlip, 6)
+            SetBlipColour(StoreBlip, sdata["blipcolour"])
+            SetBlipAsShortRange(StoreBlip, true)
+            BeginTextCommandSetBlipName("STRING")
+            AddTextComponentSubstringPlayerName(sdata["label"])
+            EndTextCommandSetBlipName(StoreBlip)
+        end
+        -- Create ped for random location number in m
+        local i = math.random(1, #sdata["model"]) -- Get random ped model
+        RequestModel(sdata["model"][i]) while not HasModelLoaded(sdata["model"][i]) do Wait(0) end
+        if ped["['"..bm.."("..loc..")']"] == nil then ped["['"..bm.."("..loc..")']"] = CreatePed(0, sdata["model"][i], sdata["coords"][loc].x, sdata["coords"][loc].y, sdata["coords"][loc].z-1.0, sdata["coords"][loc].a, false, false) end
+        if not sdata["killable"] then SetEntityInvincible(ped["['"..bm.."("..loc..")']"], true) end
+        local scenarios = { "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "WORLD_HUMAN_GUARD_PATROL", "WORLD_HUMAN_JANITOR", "WORLD_HUMAN_MUSCLE_FLEX", "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "PROP_HUMAN_STAND_IMPATIENT", }
+        local scenario = math.random(1, #scenarios) -- Get random scenario
+        TaskStartScenarioInPlace(ped["['"..bm.."("..loc..")']"], scenarios[scenario], -1, true)
+        SetBlockingOfNonTemporaryEvents(ped["['"..bm.."("..loc..")']"], true)
+        FreezeEntityPosition(ped["['"..bm.."("..loc..")']"], true)
+        SetEntityNoCollisionEntity(ped["['"..bm.."("..loc..")']"], PlayerPedId(), false)
+        if Config.Debug then print("Ped Created for Shop - ['"..bm.."("..loc..")']") end
+
+        if Config.Debug then print("Shop - ['"..bm.."("..loc..")']") end
+        exports['qb-target']:AddCircleZone("['"..bm.."("..loc..")']", vector3(sdata["coords"][loc].x, sdata["coords"][loc].y, sdata["coords"][loc].z), 2.0, { name="['"..bm.."("..loc..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),item = (sdata.openwith or nil),gang = (sdata.gang or nil), shoptable = sdata, products = productstable, name = sdata["label"], k = bm, l = loc, }, }, distance = 2.0 })
+    end)
+end)
+
+local function mainthread()
     for k, v in pairs(Config.Locations) do
         if Config.RandomItem then
             local tp = v.products
@@ -61,33 +77,8 @@ function mainthread()
             productstable = v.products
         end
         if Config.RandomLocation then
-            m = math.random(1, #v["coords"]) -- generate a random coordinate
-            if not v["hideblip"] then -- Create blip if set to false
-                StoreBlip = AddBlipForCoord(b)
-                SetBlipSprite(StoreBlip, v["blipsprite"])
-                SetBlipScale(StoreBlip, 0.7)
-                SetBlipDisplay(StoreBlip, 6)
-                SetBlipColour(StoreBlip, v["blipcolour"])
-                SetBlipAsShortRange(StoreBlip, true)
-                BeginTextCommandSetBlipName("STRING")
-                AddTextComponentSubstringPlayerName(v["label"])
-                EndTextCommandSetBlipName(StoreBlip)
-            end
-            -- Create ped for random location number in m
-            local i = math.random(1, #v["model"]) -- Get random ped model
-            RequestModel(v["model"][i]) while not HasModelLoaded(v["model"][i]) do Wait(0) end
-            if ped["['"..k.."("..m..")']"] == nil then ped["['"..k.."("..m..")']"] = CreatePed(0, v["model"][i], v["coords"][m].x, v["coords"][m].y, v["coords"][m].z-1.0, v["coords"][m].a, false, false) end
-            if not v["killable"] then SetEntityInvincible(ped["['"..k.."("..m..")']"], true) end
-            local scenarios = { "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "WORLD_HUMAN_GUARD_PATROL", "WORLD_HUMAN_JANITOR", "WORLD_HUMAN_MUSCLE_FLEX", "WORLD_HUMAN_MUSCLE_FREE_WEIGHTS", "PROP_HUMAN_STAND_IMPATIENT", }
-            scenario = math.random(1, #scenarios) -- Get random scenario
-            TaskStartScenarioInPlace(ped["['"..k.."("..m..")']"], scenarios[scenario], -1, true)
-            SetBlockingOfNonTemporaryEvents(ped["['"..k.."("..m..")']"], true)
-            FreezeEntityPosition(ped["['"..k.."("..m..")']"], true)
-            SetEntityNoCollisionEntity(ped["['"..k.."("..m..")']"], PlayerPedId(), false)
-            if Config.Debug then print("Ped Created for Shop - ['"..k.."("..m..")']") end
-
-            if Config.Debug then print("Shop - ['"..k.."("..m..")']") end
-            exports['qb-target']:AddCircleZone("['"..k.."("..m..")']", vector3(v["coords"][m].x, v["coords"][m].y, v["coords"][m].z), 2.0, { name="['"..k.."("..m..")']", debugPoly=Config.Debug, useZ=true, },{ options = { { event = "ik-blackmarket:ShopMenu", icon = "fas fa-certificate", label = Lang:t("target.browse"),item = (v.openwith or nil),gang = (v.gang or nil), shoptable = v, products = productstable, name = v["label"], k = k, l = m, }, }, distance = 2.0 })
+            Wait(500)
+            TriggerEvent('ik-blackmarket:client:CreatePed')
         else
             for l, b in pairs(v["coords"]) do -- Create ped for each location given in Config
                 if not v["hideblip"] then -- Create blip if set to false
@@ -215,8 +206,8 @@ end)
 RegisterNetEvent("ik-blackmarket:client:removeall",function()
     for k, v in pairs(Config.Locations) do
         if Config.RandomLocation then
-            exports['qb-target']:RemoveZone("['"..k.."("..m..")']")
-            if Config.Peds then	DeletePed(ped["['"..k.."("..m..")']"]) end
+            exports['qb-target']:RemoveZone("['"..k.."("..loc..")']")
+            if Config.Peds then	DeletePed(ped["['"..k.."("..loc..")']"]) end
         else
             for l, b in pairs(v["coords"]) do
                 exports['qb-target']:RemoveZone("['"..k.."("..l..")']")
@@ -224,6 +215,10 @@ RegisterNetEvent("ik-blackmarket:client:removeall",function()
             end
         end
     end
+end)
+
+CreateThread(function()
+    mainthread()
 end)
 
 AddEventHandler('onResourceStop', function(resource) if resource ~= GetCurrentResourceName() then return end

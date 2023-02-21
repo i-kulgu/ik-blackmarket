@@ -1,19 +1,38 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local Balance = 0
+local location = {}
 
-AddEventHandler('onResourceStart', function(resource)
-    for k, v in pairs(Config.Products) do
-        for i = 1, #v do
-            if not QBCore.Shared.Items[Config.Products[k][i].name] then
-                print("Config.Products['"..k.."'] can't find item: "..Config.Products[k][i].name)
-            end
-        end
-    end
+RegisterNetEvent('ik-blackmarket:server:RandomLocation', function()
     for k, v in pairs(Config.Locations) do
         if v["products"] == nil then
             print("Config.Locations['"..k.."'] can't find its product table")
         end
+        if Config.RandomLocation then
+            local m = math.random(1, #v["coords"])
+            location = {bm = k, loc= m, data = v}
+            m = 0
+        end
     end
+end)
+
+if Config.UseTimer then
+    CreateThread(function()
+        local minutes = Config.ChangeLocationTime
+        while true do
+            Wait(60000)
+            minutes = minutes - 1
+            if minutes == 0 then
+                TriggerEvent('ik-blackmarket:server:RandomLocation')
+                TriggerClientEvent("ik-blackmarket:client:removeall", -1)
+                TriggerClientEvent('ik-blackmarket:client:CreatePed', -1)
+                minutes = Config.ChangeLocationTime
+            end
+        end
+    end)
+end
+
+QBCore.Functions.CreateCallback("ik-blackmarket:server:PedLocation", function (_, cb)
+    cb(location)
 end)
 
 -- ##### Functions ##### --
@@ -134,5 +153,26 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
         Player.Functions.RemoveItem(removeitem, 1)
     else
         TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
+    end
+end)
+
+
+AddEventHandler('onResourceStart', function(resource)
+    for k, v in pairs(Config.Products) do
+        for i = 1, #v do
+            if not QBCore.Shared.Items[Config.Products[k][i].name] then
+                print("Config.Products['"..k.."'] can't find item: "..Config.Products[k][i].name)
+            end
+        end
+    end
+    for k, v in pairs(Config.Locations) do
+        if v["products"] == nil then
+            print("Config.Locations['"..k.."'] can't find its product table")
+        end
+        if Config.RandomLocation then
+            local m = math.random(1, #v["coords"])
+            location = {bm = k, loc= m, data = v}
+            m = 0
+        end
     end
 end)
