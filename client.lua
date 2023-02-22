@@ -4,6 +4,7 @@ PlayerJob = {}
 local ped = {}
 local productstable = {}
 local inmenu = false
+local rmi = nil
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function() QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end) end)
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo) PlayerJob = JobInfo end)
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty) onDuty = duty end)
@@ -114,11 +115,11 @@ end
 
 RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
     local products = data.products
-    local rmi = data.item
+    rmi = data.item
     local ShopMenu = {}
     local hasLicense, hasLicenseItem = nil
 
-    if Config.OpenWithItem then
+    if rmi then
         TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'remove')
         inmenu = true
     end
@@ -168,7 +169,7 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
 end)
 
 AddEventHandler('qb-menu:client:closeMenu', function()
-    if Config.OpenWithItem and inmenu then
+    if rmi and inmenu then
         TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'add')
         inmenu = false
     end
@@ -204,10 +205,11 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
         while not HasAnimDictLoaded('amb@prop_human_atm@male@enter') do Wait(1) end
         if HasAnimDictLoaded('amb@prop_human_atm@male@enter') then TaskPlayAnim(PlayerPedId(), 'amb@prop_human_atm@male@enter', "enter", 1.0,-1.0, 1500, 1, 1, true, true, true) end
     end
+    rmi = nil
 end)
 
 AddEventHandler('qb-input:client:closeMenu', function()
-    if Config.OpenWithItem and inmenu then
+    if rmi and inmenu then
         TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'add')
         inmenu = false
     end

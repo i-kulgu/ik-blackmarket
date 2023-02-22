@@ -149,7 +149,7 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
         data.shoptable = shoptable
     end
     custom = true
-    if not Config.RemoveItem and Config.OpenWithItem then
+    if removeitem == nil and not Config.RemoveItem then
         TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
         Player.Functions.AddItem(Config.ItemName, 1)
     end
