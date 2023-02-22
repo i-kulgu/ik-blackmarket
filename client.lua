@@ -3,6 +3,7 @@ local loc = 0
 PlayerJob = {}
 local ped = {}
 local productstable = {}
+local inmenu = false
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function() QBCore.Functions.GetPlayerData(function(PlayerData) PlayerJob = PlayerData.job end) end)
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo) PlayerJob = JobInfo end)
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty) onDuty = duty end)
@@ -116,6 +117,12 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
     local rmi = data.item
     local ShopMenu = {}
     local hasLicense, hasLicenseItem = nil
+
+    if Config.OpenWithItem then
+        TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'remove')
+        inmenu = true
+    end
+
     ShopMenu[#ShopMenu + 1] = { header = data.shoptable["label"], txt = "", isMenuHeader = true }
     ShopMenu[#ShopMenu + 1] = { header = "", txt = Lang:t("menu.close"), params = { event = "ik-blackmarket:CloseMenu" } }
 
@@ -153,21 +160,18 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
             end
         else
             ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-                    params = { event = "ik-blackmarket:Charge", args = {
-                                    item = products[i].name,
-                                    cost = totalprice,
-                                    info = products[i].info,
-                                    shoptable = products,
-                                    k = data.k,
-                                    l = data.l,
-                                    amount = amount,
-                                    custom = custom,
-                                    rem = rmi,
-                                } } }
+                    params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = products, k = data.k, l = data.l, amount = amount, custom = custom, rem = rmi} } }
         end
         text, setheader = nil
     end
     exports['qb-menu']:openMenu(ShopMenu)
+end)
+
+AddEventHandler('qb-menu:client:closeMenu', function()
+    if Config.OpenWithItem and inmenu then
+        TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'add')
+        inmenu = false
+    end
 end)
 
 RegisterNetEvent('ik-blackmarket:CloseMenu', function() exports['qb-menu']:closeMenu() end)
@@ -199,6 +203,13 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
         RequestAnimDict('amb@prop_human_atm@male@enter')
         while not HasAnimDictLoaded('amb@prop_human_atm@male@enter') do Wait(1) end
         if HasAnimDictLoaded('amb@prop_human_atm@male@enter') then TaskPlayAnim(PlayerPedId(), 'amb@prop_human_atm@male@enter', "enter", 1.0,-1.0, 1500, 1, 1, true, true, true) end
+    end
+end)
+
+AddEventHandler('qb-input:client:closeMenu', function()
+    if Config.OpenWithItem and inmenu then
+        TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'add')
+        inmenu = false
     end
 end)
 
