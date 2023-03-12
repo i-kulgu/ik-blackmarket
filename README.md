@@ -25,6 +25,11 @@ Item needed:
 	["crocodile_clips"] 			 = {["name"] = "crocodile_clips", 			["label"] = "Crocodile Clips", 	   			["weight"] = 150, 		["type"] = "item", 		["image"] = "crocodile_clips.png", 			["unique"] = false,   	["useable"] = false,   	["shouldClose"] = true,   	["combinable"] = nil,   ["description"] = "Do some wiring work..", },
 ```
 
+item image:
+
+![crocodile_clips](https://user-images.githubusercontent.com/29943243/224580582-212a16a4-3a90-46d7-91f8-d9c937ec7b79.png)
+
+
 ![image1](https://media.discordapp.net/attachments/955865077532209156/986773108990021632/unknown.png)
 ![image2](https://media.discordapp.net/attachments/986773374602711100/986773981619163166/unknown.png)
 
