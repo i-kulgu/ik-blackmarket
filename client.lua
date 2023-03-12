@@ -215,6 +215,193 @@ AddEventHandler('qb-input:client:closeMenu', function()
     end
 end)
 
+if Config.EnableHacking then
+    exports['qb-target']:AddTargetModel(Config.PhoneModels, {
+        options = {
+            {
+                icon = "fas fa-ethernet",
+                label = "Wiretap Connections",
+                item = "crocodile_clips",
+                canInteract = function()
+                    return Config.EnableHacking
+                end,
+                action = function()
+                    TriggerEvent('Mx::StartMinigameElectricCircuit', "50%", "50%", "1.0", "30vmin", "dial.ogg", function()
+                        QBCore.Functions.Progressbar('dial_connect', 'Tapping Conenctions..', 21000, false, false, {
+                            disableMovement = true,
+                            disableCarMovement = true,
+                            disableMouse = false,
+                            disableCombat = true,
+                        }, {
+                            animDict = 'anim@gangops@facility@servers@',
+                            anim = 'hotwire',
+                            flags = 16,
+                        }, {}, {}, function() -- Play When Done
+                            TriggerEvent("ik-blackmarket:client:HackSuccess")
+                        end, function() -- Play When Cancel
+                            --Stuff goes here
+                        end)
+                    end)
+                end
+            },
+        },
+        distance = 2.5
+    })
+
+    CallBackFunction = nil
+    
+    RegisterNetEvent('Mx::StartMinigameElectricCircuit')
+    AddEventHandler('Mx::StartMinigameElectricCircuit', function(x, y, scale, size_game, sound_name, Callback)
+        CircuitGame(x, y, scale, size_game, sound_name, Callback)
+    end)
+
+    local function SendDispatch()
+        if Config.Dispatch == "qbcore" then
+            local pos = GetEntityCoords(PlayerPedId())
+            TriggerServerEvent("ik-blackmarket:server:callCops", pos)
+        end
+    end
+
+    local function FinishMinigame(faults)
+        if faults > 0 then
+            SendDispatch()
+            QBCore.Functions.Notify('You fucked up, RUN !', 'error', 7500)
+        else
+            TriggerEvent("ik-blackmarket:client:GetLocation")
+        end
+    end
+
+    RegisterNetEvent("ik-blackmarket:client:CreateBMBlip", function(coords)
+        local transG = 250
+        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+        SetBlipSprite(blip, 458)
+        SetBlipColour(blip, 1)
+        SetBlipDisplay(blip, 4)
+        SetBlipAlpha(blip, transG)
+        SetBlipScale(blip, 1.0)
+        BeginTextCommandSetBlipName('STRING')
+        AddTextComponentString("Black Market")
+        EndTextCommandSetBlipName(blip)
+        while transG ~= 0 do
+            Wait(180 * 4)
+            transG = transG - 1
+            SetBlipAlpha(blip, transG)
+            if transG == 0 then
+                SetBlipSprite(blip, 2)
+                RemoveBlip(blip)
+                return
+            end
+        end
+    end)
+
+    RegisterNetEvent("ik-blackmarket:client:HackSuccess", function() 
+        QBCore.Functions.Notify('Successfully hacked into phone connection.', 'success', 7500)
+        if Config.Minigame == "keyminigame" then
+            TriggerEvent('qb-keyminigame:show')
+            TriggerEvent('qb-keyminigame:start', FinishMinigame)
+        elseif Config.Minigame == "howdys" then
+            local success = exports['howdy-hackminigame']:Begin(3, 5000)
+            if not success then
+                SendDispatch()
+            else
+                TriggerEvent("ik-blackmarket:client:GetLocation")
+            end
+        end
+    end)
+
+    RegisterNetEvent("ik-blackmarket:client:GetLocation", function() 
+        QBCore.Functions.Notify('You will get the location now', 'success', 7500)
+        if Config.RandomLocation then
+            QBCore.Functions.TriggerCallback('ik-blackmarket:server:GetBMLocation', function(data)
+                QBCore.Debug(data)
+                local loc = Config.Locations[data.bm].coords[data.loc]
+                local locv3 = vector3(loc.x, loc.y, loc.z)
+                print(locv3)
+                TriggerEvent("ik-blackmarket:client:CreateBMBlip", locv3)
+            end)
+        else
+            local bmlocnum = 0
+            for k, v in pairs(Config.Locations) do
+                bmlocnum = math.random(1, #v["coords"])
+            end
+            local bmname = nil
+            for k, v in pairs(Config.Locations) do
+                bmname = math.random(1, #k)
+            end
+            local loc = Config.Locations[bmname].coords[bmlocnum]
+            local locv3 = vector3(loc.x, loc.y, loc.z)
+            print(locv3)
+            TriggerEvent("ik-blackmarket:client:CreateBMBlip", locv3)
+        end
+    end)
+
+    RegisterNetEvent("ik-blackmarket:client:wiretappingCall", function(coords)
+        local job = QBCore.Functions.GetPlayerData().job
+        if job.name == "police" and job.onduty then
+            PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
+            TriggerServerEvent('police:server:policeAlert', "Wire tapping in progress")
+
+            local transG = 250
+            local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+            SetBlipSprite(blip, 458)
+            SetBlipColour(blip, 1)
+            SetBlipDisplay(blip, 4)
+            SetBlipAlpha(blip, transG)
+            SetBlipScale(blip, 1.0)
+            BeginTextCommandSetBlipName('STRING')
+            AddTextComponentString("10-31 | Wiretapping")
+            EndTextCommandSetBlipName(blip)
+            while transG ~= 0 do
+                Wait(180 * 4)
+                transG = transG - 1
+                SetBlipAlpha(blip, transG)
+                if transG == 0 then
+                    SetBlipSprite(blip, 2)
+                    RemoveBlip(blip)
+                    return
+                end
+            end
+        end
+    end)
+    
+    function CircuitGame(x, y, scale, size_game, sound_name, Callback)
+        SetNuiFocus(true,true)
+        SendNUIMessage({
+            ui = 'ui',
+            NuiOpen = true,
+            x = x,
+            y = y,
+            scale = scale,
+            size_game = size_game,
+            sound_name = sound_name,
+            name_resource = GetCurrentResourceName()
+        })
+        CallBackFunction = Callback
+    end
+    
+    RegisterNUICallback('electric_circuit_completed', function(data, cb)
+        CallBackFunction()
+        CloseNui()
+        cb('ok')
+    end)
+    
+    RegisterNUICallback('CloseNui', function(data, cb)
+        CloseNui()
+        cb('ok')
+    end)
+    
+    function CloseNui()
+        local ped = PlayerPedId()
+        ClearPedTasks(ped)
+    
+        SetNuiFocus(false, false)
+        SendNUIMessage({
+            ui = 'ui',
+            NuiOpen = false,
+        })
+    end
+end
+
 RegisterNetEvent("ik-blackmarket:client:removeall",function()
     for k, v in pairs(Config.Locations) do
         if Config.RandomLocation then

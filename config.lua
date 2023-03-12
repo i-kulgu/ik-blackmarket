@@ -14,7 +14,17 @@ Config = {
 	BlackMoneyMultiplier = 1.2, -- Where 1 is 100% and 2 is 200% etc, 1.2 if 120%
 	UseTimer = false, -- Use a timer to change the blackmarket location
 	ChangeLocationTime = 30, -- Time in minutes to change the location of the black market.
+	EnableHacking = true, -- Enable hacking minigames for tapping phone connections to find the location of the blackmarket
 }
+
+Config.PhoneModels = {
+	"prop_phonebox_04",
+	"prop_phonebox_01a"
+}
+
+-- Options : keyminigame (default qb-keyminigame) / howdys (https://github.com/HiHowdy/howdy-hackminigame)
+Config.Minigame = "keyminigame"
+Config.Dispatch = "qbcore"
 
 Config.Products = {
 	["blackmarket"] = {

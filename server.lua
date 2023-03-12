@@ -35,6 +35,10 @@ QBCore.Functions.CreateCallback("ik-blackmarket:server:PedLocation", function (_
     cb(location)
 end)
 
+QBCore.Functions.CreateCallback("ik-blackmarket:server:GetBMLocation", function (_, cb)
+    cb(location)
+end)
+
 -- ##### Functions ##### --
 
 local function getMarkedBillWorth(source)
@@ -184,4 +188,14 @@ RegisterNetEvent('ik-blackmarket:server:AddRemoveItem', function (action)
     if action == 'remove' then
         Player.Functions.RemoveItem(Config.ItemName, 1)
     end
+end)
+
+RegisterNetEvent("ik-blackmarket:server:callCops", function(coords)
+    local alertData = {
+        title = "10-33 | Shop Robbery",
+        coords = {x = coords.x, y = coords.y, z = coords.z},
+        description = "Someone Is WireTapping Phonecalls!"
+    }
+    TriggerClientEvent("ik-blackmarket:client:wiretappingCall", -1, coords)
+    TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
 end)
