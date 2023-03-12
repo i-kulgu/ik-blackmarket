@@ -22,7 +22,7 @@ V2 video : https://youtu.be/xE6KSBT2DzI
 Item needed:
 
 ```lua
-	["crocodile_clips"] 			 = {["name"] = "crocodile_clips", 			["label"] = "Crocodile Clips", 	   			["weight"] = 150, 		["type"] = "item", 		["image"] = "crocodile_clips.png", 			["unique"] = false,   	["useable"] = true,   	["shouldClose"] = true,   	["combinable"] = nil,   ["description"] = "Do some wiring work..", },
+	["crocodile_clips"] 			 = {["name"] = "crocodile_clips", 			["label"] = "Crocodile Clips", 	   			["weight"] = 150, 		["type"] = "item", 		["image"] = "crocodile_clips.png", 			["unique"] = false,   	["useable"] = false,   	["shouldClose"] = true,   	["combinable"] = nil,   ["description"] = "Do some wiring work..", },
 ```
 
 ![image1](https://media.discordapp.net/attachments/955865077532209156/986773108990021632/unknown.png)
