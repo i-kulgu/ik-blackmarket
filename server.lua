@@ -146,12 +146,8 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
         GiveAndCheckItem(item,amount,false,TotalPrice,Balance,billtype)
     end
     local data = {}
-    if Config.RandomItem then
-        data.products = shoptable
-        data.shoptable = shoptable
-    else
-        data.shoptable = shoptable
-    end
+    data.products = shoptable
+    data.shoptable = shoptable
     custom = true
     if removeitem == nil and not Config.RemoveItem then
         TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
