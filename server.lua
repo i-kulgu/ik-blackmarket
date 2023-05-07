@@ -151,7 +151,6 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
     custom = true
     if removeitem == nil and not Config.RemoveItem then
         TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
-        Player.Functions.AddItem(Config.ItemName, 1)
     end
 end)
 
@@ -173,16 +172,6 @@ AddEventHandler('onResourceStart', function(resource)
             location = {bm = k, loc= m, data = v}
             m = 0
         end
-    end
-end)
-
-RegisterNetEvent('ik-blackmarket:server:AddRemoveItem', function (action)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if action == 'add' then
-        Player.Functions.AddItem(Config.ItemName, 1)
-    end
-    if action == 'remove' then
-        Player.Functions.RemoveItem(Config.ItemName, 1)
     end
 end)
 
