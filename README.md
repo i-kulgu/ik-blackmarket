@@ -1,6 +1,8 @@
 # ik-blackmarket
 ## QBCore QB-Menu + QB-Input based black market script
 
+If you like my work and want to support me : [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/F2F3EU9ME)
+
 Used the same logic as the qb-shops so the config is self explanatory.
 
 ( For any help you can reach us at Discord: [Hi-Dev](https://discord.com/invite/pSJPPctrNx) )
