@@ -5,6 +5,7 @@ local Translations = {
         no_slots = "Niet genoeg slots in inventaris",
         no_money = "Niet genoeg geld",
         cant_give = "Kan item niet geven!",
+        not_enough_item = "Er is niet genoeg van dit item!"
     },
     target = {
         browse = "Winkel Bekijken",
@@ -22,10 +23,14 @@ local Translations = {
         submittext = "Betalen",
         blackmoney = "Zwart Geld",
         crypto = "Q-Bit",
+        amt = "Aantal: "
      }
 }
 
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qb_locale', 'en') == 'nl' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

@@ -5,6 +5,7 @@ local Translations = {
         no_slots = "Envanterde yeterli yuva yok",
         no_money = "Yetersiz bakiye",
         cant_give = "Item verilemiyor!",
+        not_enough_item = "Bu itemden yeterince yok!"
     },
     target = {
         browse = "Markete Gözat",
@@ -22,10 +23,14 @@ local Translations = {
         submittext = "Öde",
         blackmoney = "Kara Para",
         crypto = "Q-Bit",
+        amt = "Adet: "
      }
 }
 
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qb_locale', 'en') == 'tr' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

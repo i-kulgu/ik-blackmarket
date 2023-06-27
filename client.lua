@@ -118,7 +118,6 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
     rmi = data.item
     local ShopMenu = {}
     local hasLicense, hasLicenseItem = nil
-
     if rmi then
         TriggerServerEvent('ik-blackmarket:server:AddRemoveItem', 'remove')
         inmenu = true
@@ -128,8 +127,8 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
     ShopMenu[#ShopMenu + 1] = { header = "", txt = Lang:t("menu.close"), params = { event = "ik-blackmarket:CloseMenu" } }
 
     for i = 1, #products do
-        local amount = nil
         local lock = false
+        local text
         if products[i].price == 0 then
             price = "Free"
         else
@@ -144,24 +143,31 @@ RegisterNetEvent('ik-blackmarket:ShopMenu', function(data, custom)
                 price = Lang:t("menu.cost")..totalprice
             end
         end
-
+        if Config.Stock then
+            local p = promise.new()
+            QBCore.Functions.TriggerCallback('ik-blackmarket:server:GetItemAmount', function(amt) p:resolve(amt) end, data.k, products[i].name)
+            products[i].amount = Citizen.Await(p)
+            Wait(100)
+            text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement .. "<br>" .. Lang:t('menu.amt')..products[i].amount
+        else
+            text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
+        end
         local setheader = QBCore.Shared.Items[tostring(products[i].name)].label --"<img src=nui://"..Config.img..QBCore.Shared.Items[products[i].name].image.." width=35px onerror='this.onerror=null; this.remove();'>"..QBCore.Shared.Items[tostring(products[i].name)].label
-        local text = price.."<br>"..Lang:t("menu.weight").." "..(QBCore.Shared.Items[products[i].name].weight / 1000)..Config.Measurement
         if products[i].requiredJob then
             for i2 = 1, #products[i].requiredJob do
                 if QBCore.Functions.GetPlayerData().job.name == products[i].requiredJob[i2] then
                     ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-                        params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom, rem = rmi} } }
+                        params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = products[i].amount, custom = custom, rem = rmi} } }
                 end
             end
         elseif products[i].requiresLicense then
             if hasLicense and hasLicenseItem then
             ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-                    params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = amount, custom = custom, rem = rmi} } }
+                    params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = data.shoptable, k = data.k, l = data.l, amount = products[i].amount, custom = custom, rem = rmi} } }
             end
         else
             ShopMenu[#ShopMenu + 1] = { icon = products[i].name, header = setheader, txt = text, isMenuHeader = lock,
-                    params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = products, k = data.k, l = data.l, amount = amount, custom = custom, rem = rmi} } }
+                    params = { event = "ik-blackmarket:Charge", args = { item = products[i].name, cost = totalprice, info = products[i].info, shoptable = products, k = data.k, l = data.l, amount = products[i].amount, custom = custom, rem = rmi} } }
         end
         text, setheader = nil
     end
@@ -199,8 +205,9 @@ RegisterNetEvent('ik-blackmarket:Charge', function(data)
     if dialog then
         if not dialog.amount then return end
         if tonumber(dialog.amount) <= 0 then TriggerEvent("QBCore:Notify", Lang:t("error.incorrect_amount"), "error") TriggerEvent("ik-blackmarket:Charge", data) return end
+        if (tonumber(data.amount) - tonumber(dialog.amount)) < 0 and Config.Stock then return TriggerEvent("QBCore:Notify", Lang:t("error.not_enough_item")) end
         if data.cost == "Free" then data.cost = 0 end
-        TriggerServerEvent('ik-blackmarket:GetItem', dialog.amount, dialog.billtype, data.item, data.shoptable, data.cost, data.rem)
+        TriggerServerEvent('ik-blackmarket:GetItem', dialog.amount, dialog.billtype, data.item, data.shoptable, data.cost, data.rem, data.k)
         RequestAnimDict('amb@prop_human_atm@male@enter')
         while not HasAnimDictLoaded('amb@prop_human_atm@male@enter') do Wait(1) end
         if HasAnimDictLoaded('amb@prop_human_atm@male@enter') then TaskPlayAnim(PlayerPedId(), 'amb@prop_human_atm@male@enter', "enter", 1.0,-1.0, 1500, 1, 1, true, true, true) end
@@ -313,7 +320,6 @@ if Config.EnableHacking then
         QBCore.Functions.Notify('You will get the location now', 'success', 7500)
         if Config.RandomLocation then
             QBCore.Functions.TriggerCallback('ik-blackmarket:server:GetBMLocation', function(data)
-                QBCore.Debug(data)
                 local loc = Config.Locations[data.bm].coords[data.loc]
                 local locv3 = vector3(loc.x, loc.y, loc.z)
                 print(locv3)
@@ -406,11 +412,11 @@ RegisterNetEvent("ik-blackmarket:client:removeall",function()
     for k, v in pairs(Config.Locations) do
         if Config.RandomLocation then
             exports['qb-target']:RemoveZone("['"..k.."("..loc..")']")
-            if Config.Peds then	DeletePed(ped["['"..k.."("..loc..")']"]) end
+            if Config.Peds then DeletePed(ped["['"..k.."("..loc..")']"]) end
         else
             for l, b in pairs(v["coords"]) do
                 exports['qb-target']:RemoveZone("['"..k.."("..l..")']")
-                if Config.Peds then	DeletePed(ped["['"..k.."("..l..")']"]) end
+                if Config.Peds then DeletePed(ped["['"..k.."("..l..")']"]) end
             end
         end
     end

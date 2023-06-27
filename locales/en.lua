@@ -5,6 +5,7 @@ local Translations = {
         no_slots = "Not enough slots in inventory",
         no_money = "Not enough money",
         cant_give = "Can't give item!",
+        not_enough_item = "There is not enough of this item amount!"
     },
     target = {
         browse = "Browse Shop",
@@ -22,6 +23,7 @@ local Translations = {
         submittext = "Pay",
         blackmoney = "Black Money",
         crypto = "Q-Bit",
+        amt = "Amount: "
      }
 }
 

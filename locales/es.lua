@@ -5,6 +5,7 @@ local Translations = {
         no_slots = "No hay suficientes ranuras en el inventario",
         no_money = "No es suficiente dinero",
         cant_give = "No se puede dar el ítem!",
+        not_enough_item = "There is not enough of this item amount!"
     },
     target = {
         browse = "Ver la tienda",
@@ -22,10 +23,14 @@ local Translations = {
         submittext = "Pagar",
         blackmoney = "Plata Negra",
         crypto = "Q-Bit",
+        amt = "Amount: "
      }
 }
 
-Lang = Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qb_locale', 'en') == 'es' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end

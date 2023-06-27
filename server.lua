@@ -1,6 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local Balance = 0
 local location = {}
+local BMItems = {}
 
 RegisterNetEvent('ik-blackmarket:server:RandomLocation', function()
     for k, v in pairs(Config.Locations) do
@@ -65,7 +66,15 @@ local function payByMarkedBills(balance,source)
     Player.Functions.AddItem("markedbills", 1 , false ,info)
 end
 
-local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
+local function DeductAmount(bm, item, amount)
+    for _,v in pairs(BMItems) do
+        if v.bm == bm and v.itemname == item then
+            v.amount -= amount
+        end
+    end
+end
+
+local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype,bm)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local BlackMoneyName = Config.BlackMoneyName
@@ -83,6 +92,7 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
                     end
                     TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount)
                 end
+                if Config.Stock then DeductAmount(bm, item, amount) end
             else
                 TriggerClientEvent('QBCore:Notify', src, Lang:t("error.cant_give"), "error") break
             end
@@ -98,6 +108,7 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
                 Player.Functions.RemoveMoney(tostring(billtype), tonumber(price), 'shop-payment')
             end
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items[item], "add", amount)
+            if Config.Stock then DeductAmount(bm, item, amount) end
         else
             TriggerClientEvent('QBCore:Notify', src,  Lang:t("error.cant_give"), "error")
         end
@@ -105,7 +116,7 @@ local function GiveAndCheckItem(item,amount,weapon,price,balance,billtype)
 end
 
 local function GetTotalWeight(items)
-	local weight = 0
+    local weight = 0
     if not items then return 0 end
     for _, item in pairs(items) do
         weight += item.weight * item.amount
@@ -115,15 +126,15 @@ end
 
 -- ##### Events ##### --
 
-RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price, removeitem)
+RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, shoptable, price, removeitem, bm)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local BlackMoneyName = Config.BlackMoneyName
     local TotalPrice = tonumber(price) * tonumber(amount)
     local totalweight = GetTotalWeight(Player.PlayerData.items)
     local slots = 0
-	for _ in pairs(Player.PlayerData.items) do slots = slots +1 end
-	slots = Config.MaxSlots - slots
+    for _ in pairs(Player.PlayerData.items) do slots = slots +1 end
+    slots = Config.MaxSlots - slots
     if (totalweight + (QBCore.Shared.Items[item].weight * amount)) > Config.MaxWeight then TriggerClientEvent("QBCore:Notify", src, "Not enough space in inventory", "error") return end
     if QBCore.Shared.Items[item].unique and (tonumber(slots) < tonumber(amount)) then TriggerClientEvent("QBCore:Notify", src, "Not enough slots in inventory", "error") return end
     if billtype == "blackmoney" then
@@ -141,17 +152,18 @@ RegisterServerEvent('ik-blackmarket:GetItem', function(amount, billtype, item, s
         TriggerClientEvent("QBCore:Notify", src, Lang:t("error.no_money"), "error") return
     end
     if QBCore.Shared.Items[item].type == "weapon" or QBCore.Shared.Items[item].unique then
-        GiveAndCheckItem(item,amount,true,TotalPrice,Balance,billtype)
+        GiveAndCheckItem(item,amount,true,TotalPrice,Balance,billtype,bm)
     else
-        GiveAndCheckItem(item,amount,false,TotalPrice,Balance,billtype)
+        GiveAndCheckItem(item,amount,false,TotalPrice,Balance,billtype,bm)
     end
     local data = {}
     data.products = shoptable
     data.shoptable = shoptable
+    data.k = bm
     custom = true
     if removeitem == nil and not Config.RemoveItem then
         TriggerClientEvent('ik-blackmarket:ShopMenu', src, data, custom)
-        Player.Functions.AddItem(Config.ItemName, 1)
+        -- Player.Functions.AddItem(Config.ItemName, 1)
     end
 end)
 
@@ -162,6 +174,7 @@ AddEventHandler('onResourceStart', function(resource)
             if not QBCore.Shared.Items[Config.Products[k][i].name] then
                 print("Config.Products['"..k.."'] can't find item: "..Config.Products[k][i].name)
             end
+            BMItems[#BMItems+1] = {bm = k, itemname = Config.Products[k][i].name, amount = Config.Products[k][i].amount}
         end
     end
     for k, v in pairs(Config.Locations) do
@@ -174,6 +187,16 @@ AddEventHandler('onResourceStart', function(resource)
             m = 0
         end
     end
+end)
+
+QBCore.Functions.CreateCallback('ik-blackmarket:server:GetItemAmount', function(source, cb, bm, item)
+    for _,v in pairs(BMItems) do
+        if v.bm == bm and v.itemname == item then
+            cb(v.amount)
+            return
+        end
+    end
+    cb(nil)
 end)
 
 RegisterNetEvent('ik-blackmarket:server:AddRemoveItem', function (action)
